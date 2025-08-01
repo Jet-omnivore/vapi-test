@@ -1,0 +1,8 @@
+lib
+bin
+include
+src/__pycache__
+src/credentials.json
+output.wav
+output.pcm
+output

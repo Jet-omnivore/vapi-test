@@ -78,7 +78,6 @@ async def synthesize(request: Request):
             logging.info(f"Synthesizing: length={len(message['text'])}, rate={message['sampleRate']} Hz")
 
             audio_buffer = synthesize_audio(message['text'], message['sampleRate'])
-            # audio_buffer =  tts(message['text'], message['sampleRate'])
 
             if not audio_buffer:
                 raise Exception("TTS synthesis produced no audio")

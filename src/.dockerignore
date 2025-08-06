@@ -1,0 +1,23 @@
+# Ignore virtual environment
+venv/
+.venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+
+# Ignore local secrets and config
+.env
+*.env
+secrets/
+
+# Ignore git files
+.git
+.gitignore

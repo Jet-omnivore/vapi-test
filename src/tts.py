@@ -10,7 +10,6 @@ import av
 import io
 import wave
 import numpy as np
-from speechify.tts.audio.types.get_speech_request_model import GetSpeechRequestModel
 
 load_dotenv()
 
@@ -30,11 +29,23 @@ supported_languages = {
 class AACtoPCMConverter:
     def __init__(self, target_sample_rate: int = 16000, target_format: str = 's16', target_layout: str = 'mono'):
         self.codec = av.CodecContext.create('aac', 'r')
+        self.target_format = target_format
+        self.target_layout = target_layout
         self.resampler = av.AudioResampler(
             format=target_format,
             layout=target_layout,
             rate=target_sample_rate
         )
+
+    def set_target_sample_rate(self, sample_rate: int):
+        if sample_rate <= 0:
+            raise ValueError("Sample rate must be a positive integer")
+        self.resampler = av.AudioResampler(
+            format=self.target_format,
+            layout=self.target_layout,
+            rate=sample_rate
+        )
+
 
     def decode_chunk(self, aac_chunk: bytes) -> bytes:
 
@@ -62,38 +73,12 @@ class AACtoPCMConverter:
 
         return bytes(output_pcm)
 
-class PCMDesampler:
-    def __init__(self, target_sample_rate: int = 16000):
-        self._target_sample_rate = target_sample_rate
-
-    @property
-    def target_sample_rate(self) -> int:
-        return self._target_sample_rate
-
-    @target_sample_rate.setter
-    def target_sample_rate(self, value: int):
-        if value <= 0:
-            raise ValueError("Sample rate must be a positive integer")
-        self._target_sample_rate = value
-
-    def down_sample(self, pcm_data: bytes, original_sample_rate: int) -> bytes:
-        if original_sample_rate <= 0:
-            raise ValueError("Sample rates must be positive integers")
-
-        if original_sample_rate == self._target_sample_rate:
-            return pcm_data
-
-        return pcm_data[::int(original_sample_rate / self._target_sample_rate)]
-
-
 aac_converter = AACtoPCMConverter(target_sample_rate=16000, target_format='s16', target_layout='mono')
-pcm_desampler = PCMDesampler(target_sample_rate=16000)
 
 def synthesize_audio(text: str, sample_rate: int) -> bytes:
-    """Synthesizes audio using the GCloud Text to Speech API."""
-
-    pcm_desampler.target_sample_rate = sample_rate
+    """Synthesizes audio using the Speechify Text to Speech API."""
     response = client.tts.audio.speech(input=text, voice_id='giorgia', audio_format='wav', language='he-IL', model='simba-multilingual')
+
     if response.audio_data is None:
         raise Exception("TTS synthesis produced no audio")
 
@@ -106,9 +91,6 @@ def synthesize_audio(text: str, sample_rate: int) -> bytes:
     audio_array = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32)
 
     return resample_poly(audio_array, up=sample_rate, down=frame_rate).astype(np.int16).tobytes()
-
-    pcm_data = base64.b64decode(response.audio_data[44:]) # Skip WAV header if present
-    return pcm_desampler.down_sample(pcm_data, 44000)
 
 if __name__ == "__main__":
     with wave.open('output.wav', 'rb') as wav_file:

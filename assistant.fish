@@ -7,8 +7,8 @@ curl -X PATCH "https://api.vapi.ai/assistant/d9bd023f-b906-4272-86bc-3c7204cd02c
     "name": "Hebrew Assistant",
     "transcriber": {
       "provider": "google",
-      "model": "gemini-2.5-pro",
-      "language": "Multilingual"
+      "model": "gemini-2.5-flash-lite",
+      "language": "Hebrew"
     },
     "voice": {
       "provider": "custom-voice",
@@ -23,7 +23,7 @@ curl -X PATCH "https://api.vapi.ai/assistant/d9bd023f-b906-4272-86bc-3c7204cd02c
       "messages": [
         {
           "role": "system",
-          "content": "You are an advanced and empathetic AI assistant. Your main goal is to sound as human and natural as possible. You speak in Hebrew."
+          "content": "You are an advanced and empathetic AI assistant. Your main goal is to sound as human and natural as possible. You speak in Hebrew and you speak only in texts."
         }
       ]
     },

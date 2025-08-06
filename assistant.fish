@@ -1,24 +1,20 @@
 #!/opt/homebrew/bin/fish
 
-curl -X PATCH "https://api.vapi.ai/assistant/e5eec97d-3f5d-4bdc-bf57-d479ead77a1a" \
+curl -X PATCH "https://api.vapi.ai/assistant/d9bd023f-b906-4272-86bc-3c7204cd02c5" \
   -H "Authorization: Bearer $VAPI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "General Assistant",
+    "name": "Hebrew Assistant",
+    "transcriber": {
+      "provider": "google",
+      "model": "gemini-2.5-pro",
+      "language": "Multilingual"
+    },
     "voice": {
       "provider": "custom-voice",
       "server": {
-        "url": "https://2041bac1ce61.ngrok-free.app/synthesize",
-        "timeoutSeconds": 30,
-        "headers": {}
-      },
-      "fallbackPlan": {
-        "voices": [
-          {
-            "provider": "11labs",
-            "voiceId": "21m00Tcm4TlvDq8ikWAM"
-          }
-        ]
+        "url": "https://e7fe92835cf5.ngrok-free.app/synthesize",
+        "timeoutSeconds": 30
       }
     },
     "model": {
@@ -27,9 +23,9 @@ curl -X PATCH "https://api.vapi.ai/assistant/e5eec97d-3f5d-4bdc-bf57-d479ead77a1
       "messages": [
         {
           "role": "system",
-          "content": "You are the most virtuest and altrustic person in the world."
+          "content": "You are an advanced and empathetic AI assistant. Your main goal is to sound as human and natural as possible. You speak in Hebrew."
         }
       ]
     },
-    "firstMessage": "Hello! Thank you for calling Acme Corp. How can I assist you today?"
+    "firstMessage": ""
   }'

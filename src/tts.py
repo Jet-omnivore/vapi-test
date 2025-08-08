@@ -1,10 +1,7 @@
 from dotenv import load_dotenv
-from dataclasses import dataclass
 from speechify import Speechify
-from pprint import pprint
 from scipy.signal import resample_poly
 
-import os
 import base64
 import av
 import io
@@ -13,18 +10,7 @@ import numpy as np
 
 load_dotenv()
 
-client = Speechify(token=os.getenv('SPEECHIFY_API_KEY'))
-
-@dataclass
-class LanguageConfiguration:
-    language_code: str  
-    languade_model: str
-
-supported_languages = {
-    "en": LanguageConfiguration('en-US', 'en-US-Chirp3-HD-Charon'),
-    "hi": LanguageConfiguration('hi-IN', 'hi-IN-Chirp3-HD-Charon'),
-    "he": LanguageConfiguration('he-IL', 'he-IL-Wavenet-D'),
-}
+client = Speechify(token='QGd9zQ0_vE1ISuAuMNJbz1tqSqIYVM6T3U88YKekvIU=')
 
 class AACtoPCMConverter:
     def __init__(self, target_sample_rate: int = 16000, target_format: str = 's16', target_layout: str = 'mono'):
@@ -77,13 +63,12 @@ aac_converter = AACtoPCMConverter(target_sample_rate=16000, target_format='s16',
 
 def synthesize_audio(text: str, sample_rate: int) -> bytes:
     """Synthesizes audio using the Speechify Text to Speech API."""
-    response = client.tts.audio.speech(input=text, voice_id='giorgia', audio_format='wav', language='he-IL', model='simba-multilingual')
+    response = client.tts.audio.speech(input=text, voice_id='gil', audio_format='wav', language='he-IL', model='simba-multilingual')
 
     if response.audio_data is None:
         raise Exception("TTS synthesis produced no audio")
 
     frame_rate = 48000
-    pcm_bytes = base64.b64decode(response.audio_data)
     with wave.open(io.BytesIO(base64.b64decode(response.audio_data)), 'rb') as wav_file:
         pcm_bytes = wav_file.readframes(wav_file.getnframes())
         frame_rate = wav_file.getframerate()
@@ -93,8 +78,4 @@ def synthesize_audio(text: str, sample_rate: int) -> bytes:
     return resample_poly(audio_array, up=sample_rate, down=frame_rate).astype(np.int16).tobytes()
 
 if __name__ == "__main__":
-    with wave.open('output.wav', 'rb') as wav_file:
-        pprint(f"Audio format: {wav_file.getcomptype()} {wav_file.getsampwidth()} {wav_file.getframerate()} {wav_file.getnchannels()}")
-        
-        pcm_bytes = wav_file.readframes(wav_file.getnframes())
-        frame_rate = wav_file.getframerate()
+    synthesize_audio("שלום עולם", 16000)

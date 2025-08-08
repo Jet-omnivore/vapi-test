@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import Response
 from tts import synthesize_audio 
 import logging
 import asyncio
 import re
 import wave
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
 
@@ -65,7 +65,7 @@ async def synthesize(request: Request):
             if 'sampleRate' not in message:
                 raise HTTPException(status_code=400, detail="Invalid or missing sampleRate")
 
-            print("MESSAGE TEXT: ", message['text'])
+            #print("MESSAGE TEXT: ", message['text'])
 
             # Validate sample rate
             valid_sample_rates = [8000, 16000, 22050, 24000, 44100]
@@ -96,8 +96,3 @@ async def synthesize(request: Request):
     except Exception as e:
         logging.error(f"TTS failed: {e}")
         raise HTTPException(status_code=500, detail="Unexpected error occured")
-
-if __name__ == "__main__":
-    with wave.open("output.wav", "rb") as f:
-        framerate = f.getframerate()
-        print(framerate)
